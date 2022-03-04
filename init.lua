@@ -1,6 +1,8 @@
 if NEON then
   return NEON
 end
+local request
+request = (syn and syn.request) or request or (http and http.request) or http_request
 local tohex
 tohex = function(s)
   return s:gsub('.', function(c)
@@ -45,14 +47,11 @@ do
       if options == nil then
         options = { }
       end
-      if not (syn) then
-        return self:_error('your exploit does not support http requests!')
-      end
       if not ('string' == type(url)) then
         return self:_error('invalid url passed to :_http')
       end
       self:_debug("web request for " .. tostring(options.tag) .. " to " .. tostring(url))
-      return syn.request({
+      return request({
         Url = url,
         Method = options.method or 'GET',
         Headers = options.headers or { },
@@ -249,7 +248,7 @@ do
       end
     end,
     _tagToFile = function(self, tag)
-      return syn.crypt.hash('neonfile:' .. tag):upper():sub(1, 24)
+      return ('neon file:'..tag..math.random(0, 100))
     end,
     _fromTag = function(self, tag, options)
       if options == nil then
